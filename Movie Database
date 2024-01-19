@@ -1,0 +1,38 @@
+create table movieExec( name varchar(50), address varchar(50), certnum int, 
+    networth int, primary key( certnum ) );
+
+create table studio( name varchar(50), address varchar(50), presCnum int, 
+    primary key( name ),
+    foreign key (presCnum) references movieExec( certnum ) );
+
+create table moviestar( name varchar(50), address varchar(50), gender varchar(1),
+    birthyear int , primary key( name ));
+
+create table movies( title varchar(50), year int, length int, genre varchar(20),
+    studioname varchar(50), producerCnum int, primary key (title, year),
+    foreign key (producerCnum) references movieExec( certnum ),
+    foreign key (studioname) references studio( name ) );
+
+create table starsin( movietitle varchar(50), movieyear int, starname varchar(50),
+    primary key(movietitle, movieyear, starname),
+    foreign key (movietitle, movieyear) references movies( title, year),
+    foreign key (starname) references moviestar( name ) );
+
+# Find movies that Harrison Ford is in
+SELECT *
+FROM starsin
+WHERE starname='Harrison Ford'
+
+# Find  how many movie stars are either 'male' or born before 1955
+SELECT *
+FROM moviestar
+WHERE gender='m" OR birthyear<1955
+
+# Find all movie stars who acted in at least one film made after 1984
+SELECT name
+FROM moviestar OLD
+WHERE EXISTS (
+  SELECT*
+  FROM starsin
+  WHERE starname=OLD.name
+  AND movieyear>1984 )

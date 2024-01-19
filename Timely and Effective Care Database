@@ -1,0 +1,86 @@
+CREATE TABLE hospital(
+            providerID varchar(8) PRIMARY KEY,
+            hospitalName varchar(52),
+            address varchar(46),
+            city varchar(26),
+            state varchar(4),
+            zipcode varchar(7),
+            countyName varchar(22),
+            phone varchar(12));
+
+CREATE TABLE measure(
+            ID varchar(24) PRIMARY KEY,
+            name varchar(137),
+            context varchar(37));
+
+CREATE TABLE score(
+        ID int PRIMARY KEY,
+        footnote varchar(181),
+        sample int,
+        start date,
+        end date);
+
+CREATE TABLE record(
+    hospitalID varchar(8),
+    measureID varchar(24),
+    scoreID int,
+    PRIMARY KEY( hospitalID, measureID),
+    FOREIGN KEY (hospitalID) REFERENCES hospital( providerID),
+    FOREIGN KEY (measureID) REFERENCES measure( ID),
+    FOREIGN KEY (scoreID) REFERENCES score( ID)
+  );
+CREATE TABLE medianTimeScore(
+        value int,
+        scoreID int PRIMARY KEY,
+        FOREIGN KEY (scoreID) REFERENCES score( ID )
+        );
+
+CREATE TABLE avgTimeScore(
+        value int,
+        scoreID int PRIMARY KEY,
+        FOREIGN KEY (scoreID) REFERENCES score( ID )
+        );
+
+CREATE TABLE percentageScoreHigherBetter(
+        value int,
+        scoreID int PRIMARY KEY,
+        FOREIGN KEY (scoreID) REFERENCES score( ID )
+        );
+
+CREATE TABLE percentageScoreLowerBetter(
+        value int,
+        scoreID int PRIMARY KEY,
+        FOREIGN KEY (scoreID) REFERENCES score( ID )
+        );
+
+CREATE TABLE textLabelScore(
+        value varchar(44),
+        scoreID int PRIMARY KEY,
+        FOREIGN KEY (scoreID) REFERENCES score( ID )
+        );
+
+SELECT hospital_name, city, state, avgTimeScore.value
+FROM hospital, record r1, avgTimeScore
+WHERE r1.hospitalID=providerID
+AND r1.scoreID=avgTimeScore.scoreID
+AND r1.measure='OP_5'
+ORDER BY value DESC
+
+SELECT hospitalName, city, state
+FROM textLabelScore, hospital, record
+WHERE hospitalID=providerID
+AND record.scoreID=textLabelScore.scoreID
+AND textLabelScore.value like '%Very High%
+ORDER BY hospitalName DESC
+
+SELECT *
+FROM hospital
+WHERE hospitalName like '%SUNFLOWER%'
+
+SELECT *
+FROM hospital, percentageScoreHigherBetter P, record
+WHERE providerID=hospitalID
+AND P.scoreID=record.scoreID
+AND measureID='CAC_3'
+AND value=77
+ORDER BY value DESC

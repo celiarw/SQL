@@ -59,6 +59,7 @@ CREATE TABLE textLabelScore(
         FOREIGN KEY (scoreID) REFERENCES score( ID )
         );
 
+# Find the state that has the hospital with the longest amount of average minutes before an outpatient with chest pain or possible heart attack received an ECG
 SELECT hospital_name, city, state, avgTimeScore.value
 FROM hospital, record r1, avgTimeScore
 WHERE r1.hospitalID=providerID
@@ -66,17 +67,20 @@ AND r1.scoreID=avgTimeScore.scoreID
 AND r1.measure='OP_5'
 ORDER BY value DESC
 
+# Find the state containing the hospital with the last alphabetically name with an emergency department serving a very high volume of peopl
 SELECT hospitalName, city, state
 FROM textLabelScore, hospital, record
 WHERE hospitalID=providerID
 AND record.scoreID=textLabelScore.scoreID
 AND textLabelScore.value like '%Very High%
-ORDER BY hospitalName DESC
+ORDER BY hospitalName DESC 
 
+# Find states that have hospital with the word 'SUNFLOWER" in their names.
 SELECT *
 FROM hospital
 WHERE hospitalName like '%SUNFLOWER%'
 
+# Find the cities containing hospitals with a CAC_3 score of 77.
 SELECT *
 FROM hospital, percentageScoreHigherBetter P, record
 WHERE providerID=hospitalID
